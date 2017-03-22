@@ -12,6 +12,7 @@ var readerH  = 0;
 var readerW  = 0;
 var windowW  = 0;
 var windowH  = 0;
+var wrap     = null;
 
 function readerSizing() {
   windowW = $("#reader__wrap").width();
@@ -53,6 +54,14 @@ function prevPage() {
   });
 }
 
+function onTap(e) {
+  if (e.changedPointers[0].offsetX > (windowW / 2)) {
+    nextPage();
+  } else {
+    prevPage();
+  }
+}
+
 $(function () {
   $.ajax({
     method: "get",
@@ -66,15 +75,11 @@ $(function () {
 
     $("#reader__content").html(response);
     readerSizing();
+
+    wrap = new Hammer($("#reader__wrap")[0]);
+    wrap.on('tap', onTap);
   }
 
   $("#btn__next").click(nextPage);
   $("#btn__prev").click(prevPage);
-  $("#reader__wrap").click(function (e) {
-    if (e.offsetX > (windowW / 2)) {
-      nextPage();
-    } else {
-      prevPage();
-    }
-  });
 });
