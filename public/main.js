@@ -17,7 +17,7 @@ function readerSizing() {
   windowW = $("#reader__wrap").width();
   windowH = $("#reader__wrap").height();
   readerH = $("#reader__content").height();
-  readerP = parseInt(readerH / windowH) + 1;
+  readerP = parseInt(readerH / windowH) + (readerH % windowH > 0.05 ? 1 : 0);
   readerW = readerP * (windowW + 16);
 
   console.log('readerH', readerH);
@@ -35,7 +35,7 @@ function nextPage() {
 
   $("#reader").css({
     "-webkit-transform": "translate3d(-" + currentX + "px, 0px, 0px)",
-    "transform": "translate3d(-" + currentX + "px, 0px, 0px)"
+  "transform": "translate3d(-" + currentX + "px, 0px, 0px)"
   });
 }
 
@@ -53,10 +53,6 @@ function prevPage() {
   });
 }
 
-window.__novel_image_loaded__ = function () {
-  readerSizing();
-};
-
 $(function () {
   $.ajax({
     method: "get",
@@ -64,6 +60,10 @@ $(function () {
   }).then(onload);
 
   function onload(response) {
+    window.__novel_image_loaded__ = function () {
+      readerSizing();
+    };
+
     $("#reader__content").html(response);
     readerSizing();
   }
@@ -71,7 +71,7 @@ $(function () {
   $("#btn__next").click(nextPage);
   $("#btn__prev").click(prevPage);
   $("#reader__wrap").click(function (e) {
-    if (e.offsetX > 177) {
+    if (e.offsetX > (windowW / 2)) {
       nextPage();
     } else {
       prevPage();
